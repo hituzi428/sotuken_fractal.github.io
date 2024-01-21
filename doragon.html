@@ -1,5 +1,5 @@
 <html>
-<body>echo "ドラゴン曲線";</body>
+<h1>
 <script>
 window.onload =function(){
  var $ = function(id){ return document.getElementById(id); }
@@ -10,6 +10,7 @@ window.onload =function(){
   ctx.fillRect(0, 0, canvas.width, canvas.height);
  }
  var line = function(ctx, sx, sy, ex, ey){
+  ctx.strokeStyle="red";
   ctx.beginPath();
   ctx.moveTo(sx, sy);
   ctx.lineTo(ex, ey);
@@ -48,8 +49,8 @@ window.onload =function(){
  var dragon_call = function(depth){
   return function(){
    clear();
-   dragon(ctx, depth, 50, canvas.height/3, canvas.width-100, canvas.height/3,false);
-   if(depth < 15){
+   dragon(ctx, depth, 70, canvas.height/2.5, canvas.width-120, canvas.height/2.5,false);
+   if(depth < recursion.value){
     setTimeout(dragon_call(depth+1), 1000);
    }
   }
@@ -57,13 +58,23 @@ window.onload =function(){
  $("start").onclick = function(){
   dragon_call(0)();
  }
- dragon_call(15)();
+ dragon_call(recursion.value)();
 }
+
 </script>
 <body>
-
-<canvas id="canvas" width=400 height=400 ></canvas>
-<br/>
-<input type="button" id="start" value="start" ></input>
+ <canvas id="canvas" width=500 height=500 ></canvas>
+ <input type="button" id="start" value="start" ></input>
+ <input type="range" min ="0" max = "15"  value="0" id = "recursion"></input>
+ <h1 id="range_value"></h1>
+ <script>
+    function input_change(event){
+      range_value.innerText = '再帰回数:'+ recursion.value;
+    }
+    let recursion = document.getElementById('recursion');
+    recursion.addEventListener('input',input_change);
+    let range_valume = document.getElementById('range_valume');
+ </script>
 </body>
+</h1>
 </html>
