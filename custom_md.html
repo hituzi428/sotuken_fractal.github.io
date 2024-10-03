@@ -1,0 +1,135 @@
+<html>
+
+<head>
+    <style>
+        canvas {
+            display: block;
+            width: 500px;
+            height: 500px;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="Canvas" style="border:1px solid;"></canvas>
+    <p>
+        <label for="formulaInput">反復関数：</label>
+        <input type="text" id="formulaInput" value="z * z + c" />
+        <button id="drawButton">描画</button>
+    <p>
+        <input type="range" min="0" max="1000" value="200" id="zooms"></input>
+        <input type="range" min="0" max="1000" value="50" id=iteration></input>
+    <p>
+        <input type="range" min="0" max="500" value="250" id="zoomsscale_width"></input>
+        <input type="range" min="0" max="500" value="250" id="zoomsscale_height"></input>
+    <p>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.min.js"></script>
+
+        <script>
+            // DOM読み込み後に実行
+            document.addEventListener("DOMContentLoaded", function () {
+                const canvas = document.getElementById('Canvas');
+                const ctx = canvas.getContext('2d');
+
+                canvas.width = 500;
+                canvas.height = 500;
+
+                //基準のマンデルブロ集合の関数
+                let iterationFormula = 'z * z + c';
+
+                //反復回数、ズーム倍率などの設定
+                let Iterations = 50;
+                let zoom = 200;
+
+
+                let centerX = canvas.width / 2;
+                let centerY = canvas.height / 2;
+                //console.log(centerX);
+                //console.log(centerY);
+
+
+                function drawMandelbro() {
+                    let x = 0;
+                    let y = 0;
+
+                    // ユーザーが関数を入力して再描画
+                    document.getElementById('drawButton').addEventListener('click', () => {
+                        const inputFormula = document.getElementById('formulaInput').value;
+                        iterationFormula = inputFormula;
+                        const inputzoom = document.getElementById('zooms').value;
+                        zoom = inputzoom;
+                        const inputiterations = document.getElementById('iteration').value;
+                        Iterations = inputiterations;
+                        zoomscale_widths = document.getElementById('zoomsscale_width').value;
+                        centerX = zoomscale_widths;
+                        zoomscale_heights = document.getElementById('zoomsscale_height').value;
+                        centerY = zoomscale_heights;
+                        red = blue = green = 0;
+                        //console.log(zoom);
+                        //console.log(Iterations);
+                        //console.log(centerX);
+                        //console.log(centerY);
+                        ctx.clearRect(0, 0, canvas.width, canvas.height); //クリア
+                        drawMandelbro();
+                    });
+
+                    function drawLine() {
+
+
+                        if (x < canvas.width) {
+                            for (y = 0; y < canvas.height; y++) {
+                                let a = (x - centerX) / zoom;
+                                let b = (y - centerY) / zoom;
+
+                                let z = math.complex(a, b);
+                                const c = math.complex(a, b);
+                                let n = 0;
+
+                                //ユーザー入力の関数の評価
+                                while (n < Iterations) {
+                                    try {
+                                        z = math.evaluate(iterationFormula, { z: z, c: c });
+                                    } catch (error) {
+                                        let d = new Date();
+                                        console.error('関数の評価に失敗しました:\n' + d, error);
+                                        return;
+                                    }
+                                    if (math.abs(z.re + z.im) > 16) {
+                                        break;
+                                    }
+                                    n++;
+                                }
+                                //console.log("n=" + n);
+
+                                // 色の指定
+                                if (n == Iterations) {
+                                    //console.log("n=50");
+                                    ctx.fillStyle = `rgb(255,255,255)`;
+                                }
+                                else {
+                                    let red = n === Iterations ? 0 : ((n % 255) * 5) % 255;
+                                    let green = n === Iterations ? 0 : ((n % 255) * 7) % 255;
+                                    let blue = n === Iterations ? 0 : ((n % 255) * 8) % 255;
+                                    //console.log("n=" + n + " red=" + red + " green=" + green + " blue=" + blue);
+                                    color = `rgb(${red}, ${green}, ${blue})`;
+
+                                    ctx.fillStyle = color;
+
+                                }
+                                ctx.fillRect(x, y, 1, 1);
+                            }
+
+                            x++;
+                            setTimeout(drawLine, 0);
+                        }
+                    }
+                    drawLine();
+                }
+                drawMandelbro();
+
+            });
+        </script>
+</body>
+
+</html>
